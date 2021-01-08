@@ -3,7 +3,7 @@ author:   André Dietrich
 
 email:    LiaScript@web.de
 
-version:  0.0.1
+version:  0.0.2
 
 language: en
 
@@ -14,7 +14,6 @@ comment:  Just a simple p5js template for LiaScript.
 logo:     https://p5js.org/assets/img/p5js.svg
 
 script:   https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.2.0/p5.min.js
-
 
 @P5.eval: @P5.eval_(@uid)
 
@@ -61,6 +60,68 @@ send.handle("stop", e => { env.remove() })
 
 @end
 
+
+@P5.project: @P5.project_(@uid)
+
+@P5.project_
+<script>
+
+let div = window.document.getElementById('p5-@0')
+
+div.innerHTML = ""
+
+let sketch = function(p5) {
+
+    try {
+      let input = [
+        `@'input(0)`,
+        `@'input(1)`,
+        `@'input(2)`,
+        `@'input(3)`,
+        `@'input(4)`,
+        `@'input(5)`,
+        `@'input(6)`,
+        `@'input(7)`,
+        `@'input(8)`,
+        `@'input(9)`,
+      ]
+
+      for(let i=1; i<input.length; i++) {
+        if (input[i].startsWith(input[0])) {
+          input[i] = ""
+        }
+      }
+
+      eval(input.join("\n"))
+    } catch (e) {
+      console.error(e)
+    }
+
+    // react to try to eval console inputs, like `p5.line(0,0,500,500)`
+    send.handle("input", input => {
+      try{
+        let rslt = eval(input)
+
+        if (rslt != undefined)
+          console.log(rslt)
+      } catch (e) {
+        console.error(e);
+      }
+    })
+};
+
+let env = new p5(sketch, div);
+
+// handle stop-button events
+send.handle("stop", e => { env.remove() })
+
+"LIA: terminal"
+</script>
+
+<div id="p5-@0"></div>
+
+@end
+
 -->
 
 # p5js - Template
@@ -73,7 +134,7 @@ LiaScript:
 
 __Try it on LiaScript:__
 
-https://liascript.github.io/course/?https://raw.githubusercontent.com/liaTemplates/p5js/main/README.md
+https://liascript.github.io/course/?https://raw.githubusercontent.com/liaTemplates/p5js/0.0.2/README.md
 
 __See the project on Github:__
 
@@ -84,13 +145,13 @@ There are three ways to use this template. The easiest way is to use the
 `import` statement and the url of the raw text-file of the master branch or any
 other branch or version. But you can also copy the required functionionality
 directly into the header of your Markdown document, see therefor the
-[Implementation](#3). And of course, you could also clone this project and change
-it, as you wish.
+[Implementation](#Implementation). And of course, you could also clone this
+project and change it, as you wish.
 
                            {{1}}
 1. Load the macros via
 
-   `import: https://raw.githubusercontent.com/liaTemplates/p5js/main/README.md`
+   `import: https://raw.githubusercontent.com/LiaTemplates/p5js/0.0.2/README.md`
 
 2. Copy the definitions into your Project
 
@@ -100,8 +161,9 @@ it, as you wish.
 ## `@P5.eval`
 
                          --{{0}}--
-Currently there is only one macro, simply add `@P5.eval` to the end of
-your Processing code-block to make it executable.
+Simply add `@P5.eval` to the end of your Processing code-block to make it
+executable. This will even cover a basic error handling with a line number, if
+the execution somehow fails.
 
 ``` js
 p5.setup = function () {
@@ -125,13 +187,45 @@ p5.draw = function () {
 ```
 @P5.eval
 
+## `@P5.project`
 
+                         --{{0}}--
+If you have a more sophisticated project and you want to split it into multiple
+files, you can use the LiaScript project notation. The `+` or the `-` in front
+of the filenames define if the code should be shown or hidden. The user can
+still open it to inspect it. Add the `@P5.project` to the end of
+your Processing project to make it executable. You can split your code into max
+10 files.
+
+``` js +setup.js
+p5.setup = function () {
+  p5.createCanvas(720, 400);
+  p5.background(230);
+  p5.strokeWeight(2);
+
+  console.log("setup")
+  console.warn("geht hoffentlich...")
+}
+```
+``` js -draw.js
+p5.draw = function () {
+  if (p5.mouseIsPressed) {
+    p5.stroke(255);
+  } else {
+    p5.stroke(237, 34, 93);
+  }
+  p5.line(p5.mouseX - 66, p5.mouseY, p5.mouseX + 66, p5.mouseY);
+  p5.line(p5.mouseX, p5.mouseY - 66, p5.mouseX, p5.mouseY + 66);
+}
+```
+@P5.project
 
 
 ## Implementation
 
                          --{{0}}--
-There are two macros, `@P5.eval` and a hidden one, which actually defines all code required.
+There are two macros, `@P5.eval` and `@P5.project`, as well as the hidden
+ones, which actually defines all code required.
 
 ```html
 script:   https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.2.0/p5.min.js
@@ -181,6 +275,68 @@ send.handle("stop", e => { env.remove() })
 <div id="p5-@0"></div>
 
 @end
+
+
+@P5.project: @P5.project_(@uid)
+
+@P5.project_
+<script>
+
+let div = window.document.getElementById('p5-@0')
+
+div.innerHTML = ""
+
+let sketch = function(p5) {
+
+    try {
+      let input = [
+        `@'input(0)`,
+        `@'input(1)`,
+        `@'input(2)`,
+        `@'input(3)`,
+        `@'input(4)`,
+        `@'input(5)`,
+        `@'input(6)`,
+        `@'input(7)`,
+        `@'input(8)`,
+        `@'input(9)`,
+      ]
+
+      for(let i=1; i<input.length; i++) {
+        if (input[i].startsWith(input[0])) {
+          input[i] = ""
+        }
+      }
+
+      eval(input.join("\n"))
+    } catch (e) {
+      console.error(e)
+    }
+
+    // react to try to eval console inputs, like `p5.line(0,0,500,500)`
+    send.handle("input", input => {
+      try{
+        let rslt = eval(input)
+
+        if (rslt != undefined)
+          console.log(rslt)
+      } catch (e) {
+        console.error(e);
+      }
+    })
+};
+
+let env = new p5(sketch, div);
+
+// handle stop-button events
+send.handle("stop", e => { env.remove() })
+
+"LIA: terminal"
+</script>
+
+<div id="p5-@0"></div>
+
+@end
 ```
 
                          --{{1}}--
@@ -219,7 +375,7 @@ p5.draw = function () {
 
 ### Robot
 
-``` js
+```js    +settings.js
 let w = 640;
 let h = 360;
 let linecolor = 33;
@@ -234,7 +390,8 @@ let A = p5.createVector(A0.x + a0a.x, A0.y + a0a.y); //A in Nullstellung
 let atcp = p5.createVector(L2, 0);
 let TCP = p5.createVector(A.x + atcp.x, A.y + atcp.y); //TCP in Nullstellung
 let Pos = p5.createVector(TCP.x, TCP.y); //Soll = Ist
-
+```
+``` js   +init.js
 /// Initialisierung
 p5.setup = function() {
   p5.createCanvas(640, 360);
@@ -283,7 +440,8 @@ function moveRobot() {
   //2. TCP ermitteln und anfahren
   forwardKinematics(theta1, theta2);
 }
-
+```
+``` js -kinematics.js
 /// Frage: Wenn ich theta1 und theta2 vorgebe, wie lauten dann x und y des TCP?
 function forwardKinematics (t1, t2) {
   //A muss als Zwischenpunkt mit berechnet werden, sonst kann es nicht simuliert werden
@@ -341,4 +499,4 @@ function inverseKinematics(x, y) {
   }
 }
 ```
-@P5.eval
+@P5.project
